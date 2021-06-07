@@ -2,6 +2,7 @@ package com.example.application.security;
 
 
 import com.example.application.views.login.LoginView;
+import com.example.application.views.login.RegisterView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
@@ -20,9 +21,9 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
     }
 
     private void authenticateNavigation(BeforeEnterEvent event) {
-        if (!LoginView.class.equals(event.getNavigationTarget())
-                && !SecurityUtils.isUserLoggedIn()) {
-            event.rerouteTo(LoginView.class);
-        }
+      //  if ((!RegisterView.class.equals(event.getNavigationTarget()) && !LoginView.class.equals(event.getNavigationTarget()))
+      //          && !SecurityUtils.isUserLoggedIn()) {
+      //      event.rerouteTo(LoginView.class);
+      //  }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.application;
 
+import com.vaadin.flow.data.provider.DataGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
@@ -13,7 +14,7 @@ import org.vaadin.artur.helpers.LaunchUtil;
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
+        SpringApplication.run(Application.class, args);
     }
 
 }

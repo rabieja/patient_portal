@@ -1,41 +1,54 @@
 package com.example.application.views.login;
 
 
+import com.example.application.api.database.services.AuthService;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.login.AbstractLogin;
-import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 
 @Route("/login")
 @PageTitle("Login")
-public class LoginView  extends VerticalLayout implements BeforeEnterObserver {
-    private LoginForm login = new LoginForm();
+public class LoginView  extends VerticalLayout  {
 
-    public LoginView(){
+    public LoginView(AuthService authService){
         addClassName("login-view");
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
 
-        setJustifyContentMode(JustifyContentMode.CENTER);
+        TextField username = new TextField("Username");
+        PasswordField password = new PasswordField("Password");
+        RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>();
+        radioGroup.setItems("PATIENT", "DOCTOR");
+        radioGroup.setValue("PATIENT");
 
-        login.setAction("login");
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
+        vl.setAlignItems(Alignment.CENTER);
 
-        add(new H1("Log in"), login,
+        vl.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        vl.add(new H1("Log in"),
+                radioGroup,
+            username,
+            password,
+        new Button("Log in", event ->{
+            try {
+                authService.authenticate(username.getValue(), password.getValue(), radioGroup.getValue());
+                UI.getCurrent().navigate("about");
+            } catch (Exception e) {
+                Notification.show("Wrong credentials.");
+            }
+        }),
         new RouterLink("Register", RegisterView.class));
+
+        add(vl);
     }
 
-    private boolean authenticate(AbstractLogin.LoginEvent e) {
-        return true;
-    }
-
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if (beforeEnterEvent.getLocation().getQueryParameters()
-                .getParameters().containsKey("error")) {
-            login.setError(true);
-        }
-    }
 
 }
+
+

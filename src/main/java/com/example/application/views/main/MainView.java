@@ -2,6 +2,9 @@ package com.example.application.views.main;
 
 import java.util.Optional;
 
+import com.example.application.api.database.AppUser;
+import com.example.application.api.database.services.AuthService;
+import com.example.application.security.SecurityConfiguration;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -10,6 +13,7 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,6 +22,7 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
@@ -25,17 +30,19 @@ import com.example.application.views.main.MainView;
 import com.example.application.views.search.SearchView;
 import com.example.application.views.about.AboutView;
 
-/**
- * The main view is a top-level placeholder for other views.
- */
+
+@Route("home")
+@PageTitle("Home")
 @PWA(name = "Patient portal", shortName = "Patient portal", enableInstallPrompt = false)
 @Theme(themeFolder = "myapp")
 public class MainView extends AppLayout {
 
     private final Tabs menu;
     private H1 viewTitle;
+    private AuthService authService;
 
-    public MainView() {
+    public MainView(AuthService authService) {
+        this.authService = authService;
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -53,8 +60,10 @@ public class MainView extends AppLayout {
         viewTitle = new H1();
         layout.add(viewTitle);
         layout.add(new Avatar());
-        Anchor logout = new Anchor("login", "Log out ");
-        layout.add(logout);
+       // layout.add(new Anchor("/my_profile", "My profile"));
+       // new Anchor("logout", "Log out ");
+        Anchor logout = new Anchor("logout", "Log out ");
+        layout.add(logout, new Label("          "));
         return layout;
     }
 
@@ -84,7 +93,11 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[]{createTab("Find a doctor", SearchView.class), createTab("About", AboutView.class)};
+        AppUser user = VaadinSession.getCurrent().getAttribute(AppUser.class);
+        return authService.getAuthorizedRoutes(user.getRole()).stream()
+                .map(r -> createTab(r.name(), r.view()))
+                .toArray(Component[]::new);
+
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {

@@ -1,6 +1,14 @@
 import {applyTheme} from 'themes/theme-generated.js';
 applyTheme(document);
 
+function addCssBlock(block) {
+ const tpl = document.createElement('template');
+ tpl.innerHTML = block;
+ document.head.appendChild(tpl.content);
+}
+import $css_0 from 'Frontend/themes/myapp/views/visit-view.css';
+addCssBlock(`<custom-style><style>${$css_0}</style></custom-style>`);
+
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-list/iron-list.js';
 import '@vaadin/flow-frontend/comboBoxConnector-es6.js';
